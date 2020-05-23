@@ -1,16 +1,25 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Res, HttpStatus } from '@nestjs/common';
+import { Response } from 'express';
 import { Product } from './product.model';
+import { ProductsService } from './products.service';
 
 @Controller('products')
 export class ProductsController {
+
+    constructor(private productService: ProductsService) {
+        
+    }
+
     @Get()
-    getAll(): string {
-        return 'This action returns all cats';
+    getAll(@Res() res: Response): any {
+        const products = this.productService.GetProducts();
+        res.status(HttpStatus.OK).json(products);
     }
 
     @Post()
-    create(): string {
-        return 'This action adds a new cat';
+    create(@Body() newProduct: any, @Res() res: Response): any {
+        this.productService.CreateProduct(newProduct);
+        res.status(HttpStatus.CREATED).json({msg: 'created'});
     }
 
     @Put(':id')
