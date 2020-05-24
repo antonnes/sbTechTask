@@ -10,27 +10,41 @@ export class ProductsService {
         return this.products;
     }
 
-    public CreateProduct(productData: any) {
+    public CreateProduct(productData: any): Product {
+        productData.id = this.products[this.products.length - 1].Id + 1;
         const product = new Product(productData);
         this.products.push(product);
+        return product;
     }
 
-    public DeleteProduct(id: any) {
+    public DeleteProduct(id: number): boolean {
         const prodIdx = this.getIndex(id);
-        this.products.splice(prodIdx, 1);
+        if(prodIdx >= 0) {
+            this.products.splice(prodIdx, 1);
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public UpdateProduct(id: number, updatedProduct) {
+    public UpdateProduct(id: number, updatedProduct): boolean {
         const prodIdx = this.getIndex(id);
-        this.products[prodIdx] = updatedProduct;
+        if(prodIdx >= 0) {
+            this.products[prodIdx] = {...updatedProduct};
+            return true;
+        } else {
+            return false;
+        }        
     }
 
-    private getIndex(id): number {
+    private getIndex(id: number): number {
+        let index = -1;
         for (let i = 0; i < this.products.length; i++) {
             const product = this.products[i];
             if(product.Id === id) {
-                return i;
+                index = i;
             }
         }
+        return index;
     }
 }

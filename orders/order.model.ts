@@ -5,6 +5,7 @@ export class Order {
     public Date: Date;
     public Products: Product[];
     public Status: Status;
+    public Id: number;
 
     constructor(order) {
         this.Status = order.status;

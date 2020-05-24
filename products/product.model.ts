@@ -6,8 +6,9 @@ export class Product {
 
 
     constructor(product) {
+        this.Id = product.id;   
         this.Name = product.name;
         this.Category = product.category;
-        this.Price = product.price;        
+        this.Price = product.price; 
     }
 }
