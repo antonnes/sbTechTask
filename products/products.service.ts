@@ -1,13 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { ProductsMockupData } from 'src/Data/Products';
 import { Product } from './product.model';
+import { VatService } from './vat/vat.service';
 
 @Injectable()
 export class ProductsService {
     private products: Product[] = ProductsMockupData;
 
-    public GetProducts(): Product[] {
-        return this.products;
+    constructor(private vatService: VatService) {
+    }
+
+    public async GetProducts(): Promise<Product[]> {
+        const vat = await this.vatService.GetVat();
+        const producsWithVat = this.products.map(product => {
+            product.Price += product.Price * (vat/100);
+            return product;
+        })
+        return producsWithVat;
     }
 
     public CreateProduct(productData: any): Product {

@@ -12,8 +12,8 @@ export class ProductsController {
     }
 
     @Get()
-    getAll(@Res() res: Response): any {
-        const products = this.productService.GetProducts();
+    async getAll(@Res() res: Response): Promise<any> {
+        const products = await this.productService.GetProducts();
         res.status(HttpStatus.OK).json(products);
     }
 

@@ -2,14 +2,15 @@ import { Product } from "src/products/product.model";
 import Status from "src/Data/Status";
 
 export class Order {
+    public Id: number;
     public Date: Date;
     public Products: Product[];
     public Status: Status;
-    public Id: number;
 
     constructor(order) {
-        this.Status = order.status;
-        this.Products = order.products;
+        this.Id = order.id;
         this.Date = new Date();
+        this.Products = order.products;
+        this.Status = order.status;
     }
 }

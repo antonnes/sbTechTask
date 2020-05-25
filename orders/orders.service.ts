@@ -4,14 +4,15 @@ import { Order } from './order.model';
 
 @Injectable()
 export class OrdersService {
-    private orders: Order[] = OrdersMockupData;
+    // private orders: Order[] = OrdersMockupData;
+    private orders: Order[] = [];
 
-    public GetProducts(): Order[] {
+    public GetOrders(): Order[] {
         return this.orders;
     }
 
     public CreateOrder(orderData: any): Order {
-        orderData.id = this.orders[this.orders.length - 1].Id + 1;
+        orderData.id = this.orders.length > 0 ? this.orders[this.orders.length - 1].Id + 1 : 1;
         const order = new Order(orderData);
         this.orders.push(order);
         return order;
