@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Res, HttpStatus, UseGuards, ParseIntPipe, Req } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Res, HttpStatus, UseGuards, ParseIntPipe, Req, Request } from '@nestjs/common';
 import { Response } from 'express';
 import { Product } from './product.model';
 import { ProductsService } from './products.service';
@@ -12,8 +12,9 @@ export class ProductsController {
     }
 
     @Get()
-    async getAll(@Res() res: Response): Promise<any> {
-        const products = await this.productService.GetProducts('bg');
+    async getAll(@Req() request, @Res() res: Response): Promise<any> {
+        const countryCode = request.query.countryCode;
+        const products = await this.productService.GetProducts(countryCode);
         res.status(HttpStatus.OK).json(products);
     }
 
