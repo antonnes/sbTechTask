@@ -1,18 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { ProductsMockupData } from 'src/Data/Products';
 import { Product } from './product.model';
 import { VatService } from './vat/vat.service';
+import { InMemoryDBService } from '@nestjs-addons/in-memory-db';
+import { ProductEntity } from 'src/Data/product.interface';
 
 @Injectable()
 export class ProductsService {
-    private products: Product[] = ProductsMockupData;
+ 
 
-    constructor(private vatService: VatService) {
+    constructor(private vatService: VatService, private dbService: InMemoryDBService<ProductEntity>) {
+        dbService.create({Name: 'T-shirt', Price: 12, Category: 'Clothes'});
+        dbService.create({Name: 'Phone', Price: 438, Category: 'Electronics'});
+        dbService.create({Name: 'Speakers', Price: 50, Category: 'Electronics'});
+        dbService.create({Name: 'Harry Potter', Price: 10, Category: 'Books'});
+        dbService.create({Name: 'Banana', Price: 1, Category: 'Food'});
     }
 
-    public async GetProducts(): Promise<Product[]> {
-        const vat = await this.vatService.GetVat();
-        const producsWithVat = this.products.map(product => {
+    public async GetProducts(countryCode: string): Promise<Product[]> {
+        const vat = await this.vatService.GetVat(countryCode);
+        const products = this.dbService.getAll();
+        const producsWithVat = products.map(product => {
             product.Price += product.Price * (vat/100);
             return product;
         })
@@ -20,40 +27,18 @@ export class ProductsService {
     }
 
     public CreateProduct(productData: any): Product {
-        productData.id = this.products[this.products.length - 1].Id + 1;
         const product = new Product(productData);
-        this.products.push(product);
+        this.dbService.create(product);
         return product;
     }
 
-    public DeleteProduct(id: number): boolean {
-        const prodIdx = this.getIndex(id);
-        if(prodIdx >= 0) {
-            this.products.splice(prodIdx, 1);
-            return true;
-        } else {
-            return false;
-        }
+    public DeleteProduct(id: number): void {
+        this.dbService.delete(id);
+
     }
 
-    public UpdateProduct(id: number, updatedProduct): boolean {
-        const prodIdx = this.getIndex(id);
-        if(prodIdx >= 0) {
-            this.products[prodIdx] = {...updatedProduct};
-            return true;
-        } else {
-            return false;
-        }        
-    }
-
-    private getIndex(id: number): number {
-        let index = -1;
-        for (let i = 0; i < this.products.length; i++) {
-            const product = this.products[i];
-            if(product.Id === id) {
-                index = i;
-            }
-        }
-        return index;
+    public UpdateProduct(id: number, updatedProduct): void {
+        this.dbService.update(updatedProduct);
+         
     }
 }

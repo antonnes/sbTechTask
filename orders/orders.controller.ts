@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Res, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Res, HttpStatus, UseGuards, ValidationPipe, UsePipes } from '@nestjs/common';
 import { Response } from 'express';
 import { Order } from './order.model';
 import { OrdersService } from './orders.service';
@@ -21,15 +21,16 @@ export class OrdersController {
 
     @UseGuards(JwtAuthGuard)
     @Post()
+    @UsePipes(new ValidationPipe({ transform: true }))
     create(@Body() newOrder: OrderDto, @Res() res: Response): any {
         this.ordersService.CreateOrder(newOrder);
-        const orders = this.ordersService.GetOrders();
-        res.status(HttpStatus.CREATED).json({msg: 'Order created', products: orders});
+        res.status(HttpStatus.CREATED).json({msg: 'Order created'});
     }
 
     @UseGuards(JwtAuthGuard)
     @Put(':id')
-    update(@Param('id') id: number, @Body() updatedStatus: Order) {
+    update(@Param('id') id: number, @Body() updatedStatus: Order, @Res() res: Response) {
         this.ordersService.ChangeOrderStatus(id, updatedStatus);
+        res.status(HttpStatus.CREATED).json({msg: 'Order updated'});
     }
 }

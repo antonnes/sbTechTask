@@ -1,15 +1,13 @@
-import { Product } from "src/products/product.model";
-import Status from "src/Data/Status";
+import { IsNotEmpty } from 'class-validator';
+import Status from "src/Data/OrderStatus";
 
 export class Order {
-    public Id: number;
-    public Date: Date;
-    public Products: Product[];
+    public Date: string;
+    public Products: number[];
     public Status: Status;
 
     constructor(order) {
-        this.Id = order.id;
-        this.Date = new Date();
+        this.Date = `${new Date()}`;
         this.Products = order.products;
         this.Status = order.status;
     }

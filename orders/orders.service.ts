@@ -1,41 +1,39 @@
 import { Injectable } from '@nestjs/common';
-import { OrdersMockupData } from 'src/Data/OrdersMockupData';
 import { Order } from './order.model';
+import { InMemoryDBService } from '@nestjs-addons/in-memory-db';
+import { OrderEntity } from 'src/Data/order.interface';
+import OrderStatus from 'src/Data/OrderStatus';
 
 @Injectable()
 export class OrdersService {
-    // private orders: Order[] = OrdersMockupData;
-    private orders: Order[] = [];
+
+    constructor(private ordersDb: InMemoryDBService<OrderEntity>) {
+        ordersDb.create({Date: 'Sat May 02 2020 12:45:12 GMT+0000', Products: [1, 4, 5], Status: OrderStatus.Pending});
+        ordersDb.create({Date: 'Tue May 05 2020 15:01:50 GMT+0000', Products: [2, 3], Status: OrderStatus.Pending});
+        ordersDb.create({Date: 'Mon May 18 2020 10:22:30 GMT+0000', Products: [1], Status: OrderStatus.Pending});
+        ordersDb.create({Date: 'Sun May 10 2020 09:40:01 GMT+0000', Products: [4, 2], Status: OrderStatus.Pending});
+    }
 
     public GetOrders(): Order[] {
-        return this.orders;
+        const orders = this.ordersDb.getAll();
+        return orders;
     }
 
     public CreateOrder(orderData: any): Order {
-        orderData.id = this.orders.length > 0 ? this.orders[this.orders.length - 1].Id + 1 : 1;
         const order = new Order(orderData);
-        this.orders.push(order);
+        this.ordersDb.create(order);
         return order;
+        
     }
 
-    public ChangeOrderStatus(id: number, newStatus): boolean {
-        const orderIdx = this.getIndex(id);
-        if(orderIdx >= 0) {
-            this.orders[orderIdx].Status = newStatus;
-            return true;
-        } else {
-            return false;
-        }        
-    }
-
-    private getIndex(id: number): number {
-        let index = -1;
-        for (let i = 0; i < this.orders.length; i++) {
-            const product = this.orders[i];
-            if(product.Id === id) {
-                index = i;
-            }
-        }
-        return index;
+    public ChangeOrderStatus(id: number, newStatus): void {
+        this.ordersDb.update(newStatus);
+        //const orderIdx = this.getIndex(id);
+        // if(orderIdx >= 0) {
+        //     this.orders[orderIdx].Status = newStatus;
+        //     return true;
+        // } else {
+        //     return false;
+        // }        
     }
 }

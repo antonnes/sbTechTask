@@ -1,8 +1,8 @@
-import { IsNumber, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 export class OrderDto {
+    @IsNotEmpty()
+    public products: number[];
     
-    public Products: number[];
-    
-    @IsNumber()
-    public Status: number;
+    @IsNotEmpty()
+    public status: number;
 }
